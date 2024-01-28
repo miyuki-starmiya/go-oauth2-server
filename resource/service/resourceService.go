@@ -1,10 +1,10 @@
-package usecase
+package service
 
 import (
 	"net/http"
 
-	"go-oauth2-server/resource-server/entity"
-	"go-oauth2-server/resource-server/util"
+	"go-oauth2-server/resource/domain/entity"
+	"go-oauth2-server/resource/util"
 )
 
 var resource = &entity.Resource{
