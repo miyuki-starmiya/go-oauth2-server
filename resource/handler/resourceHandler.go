@@ -10,11 +10,11 @@ import (
 )
 
 func ResourceHandler(w http.ResponseWriter, r *http.Request) {
-	resource := service.GetResource(r)
-	if resource == nil {
+	resource, err := service.GetResource(r)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		io.WriteString(w, "Unauthorized\n")
-		log.Printf("Unauthorized\n")
+		log.Printf("error: %v\n", err)
 		return
 	}
 
