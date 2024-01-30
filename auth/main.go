@@ -8,11 +8,14 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	"go-oauth2-server/auth/handler"
+	"go-oauth2-server/auth/store"
 )
 
 func main() {
-	ah := handler.NewAuthorizeHandler()
-	// th := handler.NewTokenHandler()
+	store := store.NewStore()
+
+	ah := handler.NewAuthorizeHandler(store)
+	// th := handler.NewTokenHandler(store)
 
 	http.HandleFunc("/authorize", ah.HandleAuthorizeRequest)
 	// http.HandleFunc("/token", th.HandleTokenRequest)

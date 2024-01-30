@@ -1,4 +1,4 @@
-// package generate
+package generate
 
 // import (
 // 	"bytes"

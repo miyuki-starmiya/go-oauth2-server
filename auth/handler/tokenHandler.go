@@ -6,21 +6,16 @@ import (
 	"os"
 
 	"go-oauth2-server/auth/generate"
-	"go-oauth2-server/auth/store"
 )
 
-func NewAuthorizeHandler(store *store.Store) *AuthorizeHandler {
-	return &AuthorizeHandler{
-		Store: store,
-	}
+func NewTokenHandler() *TokenHandler {
+	return &TokenHandler{}
 }
 
-type AuthorizeHandler struct {
-	Store *store.Store
-}
+type TokenHandler struct{}
 
-func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
-	if !validateAuthorizeRequest(r) {
+func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
+	if !validateTokenRequest(r) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -33,13 +28,13 @@ func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *htt
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
-func validateAuthorizeRequest(r *http.Request) bool {
-	if r.Method != "GET" {
-		log.Println("request method must be GET")
+func validateTokenRequest(r *http.Request) bool {
+	if r.Method != "POST" {
+		log.Println("request method must be POST")
 		return false
 	}
-	if r.URL.Query().Get("response_type") != "code" {
-		log.Println("response_type must be code")
+	if r.URL.Query().Get("grant_type") != "authorization_code" {
+		log.Println("response_type must be authorization_code")
 		return false
 	}
 	if r.URL.Query().Get("client_id") != os.Getenv("CLIENT_ID") {
@@ -48,10 +43,6 @@ func validateAuthorizeRequest(r *http.Request) bool {
 	}
 	if r.URL.Query().Get("redirect_uri") != os.Getenv("REDIRECT_URI") {
 		log.Println("redirect_uri is wrong")
-		return false
-	}
-	if r.URL.Query().Get("state") == "" {
-		log.Println("state is empty")
 		return false
 	}
 
