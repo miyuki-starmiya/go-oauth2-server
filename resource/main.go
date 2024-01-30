@@ -15,5 +15,3 @@ func main() {
     log.Printf("listen port: %s\n", port)
     http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil)
 }
-
-
