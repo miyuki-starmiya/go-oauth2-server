@@ -20,5 +20,5 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resource)
-	log.Printf("success\n")
+	log.Println("success")
 }
