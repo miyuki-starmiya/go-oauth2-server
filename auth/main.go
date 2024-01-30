@@ -11,8 +11,11 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/authorize", handler.AuthorizeHandler)
-	// http.HandleFunc("/token", handler.tokenHandler)
+	ah := handler.NewAuthorizeHandler()
+	// th := handler.NewTokenHandler()
+
+	http.HandleFunc("/authorize", ah.HandleAuthorizeRequest)
+	// http.HandleFunc("/token", th.HandleTokenRequest)
 
 	port := "9001"
 	log.Printf("listen port: %s\n", port)

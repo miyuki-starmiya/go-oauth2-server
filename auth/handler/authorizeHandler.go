@@ -8,7 +8,13 @@ import (
 	"go-oauth2-server/auth/generate"
 )
 
-func AuthorizeHandler(w http.ResponseWriter, r *http.Request) {
+func NewAuthorizeHandler() *AuthorizeHandler {
+	return &AuthorizeHandler{}
+}
+
+type AuthorizeHandler struct{}
+
+func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
 	if !validateAuthorizeRequest(r) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
