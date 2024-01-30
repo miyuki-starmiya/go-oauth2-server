@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-    http.HandleFunc("/resource", handler.ResourceHandler)
+	http.HandleFunc("/resource", handler.ResourceHandler)
 
-    port := "9002"
-    log.Printf("listen port: %s\n", port)
-    http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil)
+	port := "9002"
+	log.Printf("listen port: %s\n", port)
+	http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil)
 }
