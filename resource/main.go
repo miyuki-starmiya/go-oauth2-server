@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/resource", handler.ResourceHandler)
+	rh := handler.NewResourceHandler()
+	http.HandleFunc("/resource", rh.GetResource)
 
 	port := "9002"
 	log.Printf("listen port: %s\n", port)

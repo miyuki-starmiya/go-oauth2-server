@@ -9,7 +9,13 @@ import (
 	"go-oauth2-server/resource/service"
 )
 
-func ResourceHandler(w http.ResponseWriter, r *http.Request) {
+func NewResourceHandler() *ResourceHandler {
+	return &ResourceHandler{}
+}
+
+type ResourceHandler struct{}
+
+func (h *ResourceHandler) GetResource(w http.ResponseWriter, r *http.Request) {
 	resource, err := service.GetResource(r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
