@@ -1,25 +1,34 @@
 package generate
 
-// import (
-// 	"bytes"
-// 	"context"
-// 	"encoding/base64"
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"strconv"
+	"strings"
+	"time"
 
-// 	"github.com/google/uuid"
-// )
+	"github.com/google/uuid"
+)
 
-// func NewAuthorizeGenerate() *AuthorizeGenerate {
-// 	return &AuthorizeGenerate{}
-// }
+func NewAccessGenerate() *AccessGenerate {
+	return &AccessGenerate{}
+}
 
-// type AuthorizeGenerate struct{}
+type AccessGenerate struct{}
 
-// func (ag *AuthorizeGenerate) Token(ctx context.Context, clientId string) (string, error) {
-// 	buf := bytes.NewBufferString(clientId)
-// 	// buf.WriteString("authorize")
-// 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
-// 	code := base64.URLEncoding.EncodeToString([]byte(token.String()))
-// 	// code = strings.ToUpper(strings.TrimRight(code, "="))
+func (ag *AccessGenerate) Token(ctx context.Context, clientId string, isGenRefresh bool) (string, string, error) {
+	buf := bytes.NewBufferString(clientId)
+	now := time.Now()
+	buf.WriteString(strconv.FormatInt(now.UnixNano(), 10))
 
-// 	return code, nil
-// }
+	access := base64.URLEncoding.EncodeToString([]byte(uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes()).String()))
+	access = strings.ToUpper(strings.TrimRight(access, "="))
+	refresh := ""
+	if isGenRefresh {
+		refresh = base64.URLEncoding.EncodeToString([]byte(uuid.NewSHA1(uuid.Must(uuid.NewRandom()), buf.Bytes()).String()))
+		refresh = strings.ToUpper(strings.TrimRight(refresh, "="))
+	}
+
+	return access, refresh, nil
+}
