@@ -1,6 +1,8 @@
 package store
 
 import (
+	"fmt"
+
 	"go-oauth2-server/auth/model"
 )
 
@@ -9,19 +11,22 @@ func NewStore() *Store {
 }
 
 type Store struct {
-	Data []*model.AuthorizeData
+	Data []*model.AuthorizationData
 }
 
-func (s *Store) GetData(authorizationCode string) (*model.AuthorizeData, error) {
-	// TODO: find and error handling
-	return &model.AuthorizeData{
-		ClientID:          "1234",
-		RedirectURI:       "http://localhost:9000/callback",
-		AuthorizationCode: authorizationCode,
-	}, nil
+func (s *Store) GetData(clientId string, authorizationCode string) (*model.AuthorizationData, error) {
+	authorizationData := &model.AuthorizationData{}
+	for _, data := range s.Data {
+		if (data.ClientID == clientId) && (data.AuthorizationCode == authorizationCode) {
+			authorizationData = data
+		} else {
+			return nil, fmt.Errorf("authorization code with this client is not found")
+		}
+	}
+	return authorizationData, nil
 }
 
-func (s *Store) SetData(data *model.AuthorizeData) error {
+func (s *Store) SetData(data *model.AuthorizationData) error {
 	s.Data = append(s.Data, data)
 	return nil
 }

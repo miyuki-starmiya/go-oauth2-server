@@ -15,12 +15,13 @@ func main() {
 	store := store.NewStore()
 
 	ah := handler.NewAuthorizeHandler(store)
-	// th := handler.NewTokenHandler(store)
+	th := handler.NewTokenHandler(store)
 
 	http.HandleFunc("/authorize", ah.HandleAuthorizeRequest)
-	// http.HandleFunc("/token", th.HandleTokenRequest)
+	http.HandleFunc("/token", th.HandleTokenRequest)
 
 	port := "9001"
-	log.Printf("listen port: %s\n", port)
-	http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil)
+	host := "0.0.0.0"
+	log.Printf("listen start: %s:%s\n", host, port)
+	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil)
 }

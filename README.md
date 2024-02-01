@@ -4,8 +4,7 @@
 ## Quick Start
 
 ```sh
-$ docker-compose build . -t go-oauth2-server
-$ docker-compose up go-oauth2-server
+$ docker-compose up --build
 ```
 
 ### Open in your web browser

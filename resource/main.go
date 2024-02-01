@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/resource", rh.GetResource)
 
 	port := "9002"
-	log.Printf("listen port: %s\n", port)
-	http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil)
+	host := "0.0.0.0"
+	log.Printf("listen start: %s:%s\n", host, port)
+	http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil)
 }
