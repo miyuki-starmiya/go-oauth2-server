@@ -8,15 +8,15 @@ import (
 )
 
 var resource = &entity.Resource{
-    Name:        "resource",
-    Description: "This is a resource",
+	Name:        "resource",
+	Description: "This is a resource",
 }
 
-func GetResource(r *http.Request) *entity.Resource {
-    accessToken := util.GetAccessToken(r)
-    if accessToken == "" {
-        return nil
-    }
+func GetResource(r *http.Request) (*entity.Resource, error) {
+	_, err := util.GetAccessToken(r)
+	if err != nil {
+		return nil, err
+	}
 
-    return resource
+	return resource, nil
 }

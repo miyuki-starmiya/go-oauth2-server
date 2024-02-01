@@ -1,0 +1,28 @@
+version: '3.6'
+
+services:
+  auth:
+    build:
+      context: ./auth
+    ports:
+      - "9001:9001"
+    # networks:
+    #   - localnet
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  resource:
+    build:
+      context: ./resource
+    ports:
+      - "9002:9002"
+    # networks:
+      # - localnet
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - auth
+
+networks:
+  localnet:
+    driver: bridge
