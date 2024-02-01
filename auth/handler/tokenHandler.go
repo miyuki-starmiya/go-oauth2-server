@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"go-oauth2-server/auth/generate"
 	"go-oauth2-server/auth/store"
 	"go-oauth2-server/auth/util"
 )
@@ -26,11 +27,17 @@ func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	clientId, _, _ := getClientData(r)
+	access, refresh, _ := generate.NewAccessGenerate().Token(r.Context(), clientId, false)
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "success",
+	json.NewEncoder(w).Encode(map[string]any{
+		"access_token":  access,
+		"token_type":    "Bearer",
+		"expires_in":    3600,
+		"refresh_token": refresh,
 	})
-	log.Println("success")
+	log.Println("access token generated successfully")
 }
 
 func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
@@ -49,12 +56,7 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 	}
 
 	// Check Basic Authentication Header
-	authorizationHeader, err := util.RetrieveAuthorizationHeader(r)
-	if err != nil {
-		log.Printf("Error: %v\n", err)
-		return false
-	}
-	clientId, clientSecret, err := util.DecodeClientBase64(authorizationHeader)
+	clientId, clientSecret, err := getClientData(r)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		return false
@@ -69,4 +71,17 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 	}
 
 	return true
+}
+
+func getClientData(r *http.Request) (string, string, error) {
+	authorizationHeader, err := util.RetrieveAuthorizationHeader(r)
+	if err != nil {
+		return "", "", err
+	}
+	clientId, clientSecret, err := util.DecodeClientBase64(authorizationHeader)
+	if err != nil {
+		return "", "", err
+	}
+
+	return clientId, clientSecret, nil
 }

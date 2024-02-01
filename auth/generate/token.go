@@ -22,13 +22,11 @@ func (ag *AccessGenerate) Token(ctx context.Context, clientId string, isGenRefre
 	now := time.Now()
 	buf.WriteString(strconv.FormatInt(now.UnixNano(), 10))
 
-	access := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
-	access = base64.URLEncoding.EncodeToString([]byte(access.String()))
+	access := base64.URLEncoding.EncodeToString([]byte(uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes()).String()))
 	access = strings.ToUpper(strings.TrimRight(access, "="))
 	refresh := ""
 	if isGenRefresh {
-		refresh = uuid.NewSHA1(uuid.Must(uuid.NewRandom()), buf.Bytes())
-		refresh = base64.URLEncoding.EncodeToString([]byte(refresh.String()))
+		refresh = base64.URLEncoding.EncodeToString([]byte(uuid.NewSHA1(uuid.Must(uuid.NewRandom()), buf.Bytes()).String()))
 		refresh = strings.ToUpper(strings.TrimRight(refresh, "="))
 	}
 

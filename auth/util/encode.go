@@ -9,7 +9,7 @@ import (
 
 func RetrieveAuthorizationHeader(r *http.Request) (string, error) {
 	authorizationHeader := r.Header.Get("Authorization")
-	if !strings.HasPrefix(authorizationHeader, "Basic: ") {
+	if !strings.HasPrefix(authorizationHeader, "Basic ") {
 		return "", fmt.Errorf("authorization header is not basic")
 	}
 
