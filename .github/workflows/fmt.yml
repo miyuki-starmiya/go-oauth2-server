@@ -7,7 +7,7 @@ on:
 
 jobs:
   gofmt:
-    name: Run gofmt on directories
+    name: Run gofmt on Go modules
     runs-on: ubuntu-latest
 
     steps:
@@ -21,11 +21,17 @@ jobs:
       with:
         go-version: '1.21' # Use the version of Go your project requires
 
-    - name: Run gofmt on auth directory
-      run: go fmt ./auth/...
+    - name: Run gofmt on auth module
+      run: |
+        cd auth
+        go fmt ./...
 
-    - name: Run gofmt on resource directory
-      run: go fmt ./resource/...
+    - name: Run gofmt on resource module
+      run: |
+        cd resource
+        go fmt ./...
+
+    # Add commands for other modules if necessary
 
     - name: Commit changes
       run: |
