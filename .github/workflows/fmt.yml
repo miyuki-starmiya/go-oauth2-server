@@ -39,4 +39,5 @@ jobs:
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git diff --staged --quiet || git commit -m "Apply gofmt changes"
+        git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/miyuki-starmiya/go-oauth2-server.git
         git push
