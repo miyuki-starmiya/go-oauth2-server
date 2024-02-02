@@ -1,1 +1,1 @@
-// impl
+package errors
