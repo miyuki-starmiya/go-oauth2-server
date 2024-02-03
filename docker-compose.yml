@@ -8,6 +8,8 @@ services:
       - "9001:9001"
     env_file:
       - ./.env
+    networks:
+      - go-oauth2-server_network
 
   resource:
     build:
@@ -18,6 +20,8 @@ services:
       - ./.env
     depends_on:
       - auth
+    networks:
+      - go-oauth2-server_network
 
   db:
     image: mongo:latest
@@ -30,7 +34,12 @@ services:
     depends_on:
       - auth
       - resource
+    networks:
+      - go-oauth2-server_network
 
 volumes:
   data:
 
+networks:
+  go-oauth2-server_network:
+    driver: "bridge"

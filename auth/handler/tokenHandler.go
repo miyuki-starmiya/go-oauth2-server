@@ -5,20 +5,24 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"go-oauth2-server/auth/generate"
+	"go-oauth2-server/auth/model"
 	"go-oauth2-server/auth/store"
 	"go-oauth2-server/auth/util"
 )
 
-func NewTokenHandler(cs *store.CodeStore) *TokenHandler {
+func NewTokenHandler(cs *store.CodeStore, ts *store.TokenStore) *TokenHandler {
 	return &TokenHandler{
-		CodeStore: cs,
+		CodeStore:  cs,
+		TokenStore: ts,
 	}
 }
 
 type TokenHandler struct {
-	CodeStore *store.CodeStore
+	CodeStore  *store.CodeStore
+	TokenStore *store.TokenStore
 }
 
 func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
@@ -29,12 +33,29 @@ func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Reques
 
 	clientId, _, _ := getClientData(r)
 	access, refresh, _ := generate.NewAccessGenerate().Token(r.Context(), clientId, false)
+	tokenType := "Bearer"
+	expiresIn := 3600
+
+	// store the token object
+	tokenData := &model.TokenData{
+		ClientID:     clientId,
+		AccessToken:  access,
+		ExpiresIn:    expiresIn,
+		RefreshToken: refresh,
+		IssuedAt:     time.Now(),
+		TokenType:    tokenType,
+	}
+	if err := th.TokenStore.CreateData(tokenData); err != nil {
+		log.Printf("Error: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"access_token":  access,
-		"token_type":    "Bearer",
-		"expires_in":    3600,
+		"token_type":    tokenType,
+		"expires_in":    expiresIn,
 		"refresh_token": refresh,
 	})
 	log.Println("access token generated successfully")
@@ -47,7 +68,7 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		return false
 	}
 	if r.URL.Query().Get("grant_type") != "authorization_code" {
-		log.Println("response_type must be authorization_code")
+		log.Println("grant_type must be authorization_code")
 		return false
 	}
 	if r.URL.Query().Get("redirect_uri") != os.Getenv("REDIRECT_URI") {

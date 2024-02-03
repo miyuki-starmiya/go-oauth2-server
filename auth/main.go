@@ -12,7 +12,6 @@ import (
 )
 
 func main() {
-	// store := store.NewStore()
 	db, err := store.NewDatabase()
 	if err != nil {
 		log.Printf("Error: %v\n", err)
@@ -24,7 +23,7 @@ func main() {
 	)
 	th := handler.NewTokenHandler(
 		store.NewCodeStore(db),
-		// add TokenStore
+		store.NewTokenStore(db),
 	)
 
 	http.HandleFunc("/authorize", ah.HandleAuthorizeRequest)
