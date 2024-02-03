@@ -9,14 +9,14 @@ import (
 	"go-oauth2-server/auth/store"
 )
 
-func NewAuthorizeHandler(store *store.Store) *AuthorizeHandler {
+func NewAuthorizeHandler(cs *store.CodeStore) *AuthorizeHandler {
 	return &AuthorizeHandler{
-		Store: store,
+		CodeStore: cs,
 	}
 }
 
 type AuthorizeHandler struct {
-	Store *store.Store
+	CodeStore *store.CodeStore
 }
 
 func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
@@ -27,8 +27,10 @@ func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *htt
 
 	state := r.URL.Query().Get("state")
 
-	// redirect
 	code, _ := generate.NewAuthorizeGenerate().Token(r.Context(), os.Getenv("CLIENT_ID"))
+	// store the code object
+
+	// redirect
 	redirectURL := os.Getenv("REDIRECT_URI") + "?code=" + code + "&state=" + state
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

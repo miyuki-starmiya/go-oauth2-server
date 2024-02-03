@@ -12,10 +12,20 @@ import (
 )
 
 func main() {
-	store := store.NewStore()
+	// store := store.NewStore()
+	db, err := store.NewDatabase()
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		return
+	}
 
-	ah := handler.NewAuthorizeHandler(store)
-	th := handler.NewTokenHandler(store)
+	ah := handler.NewAuthorizeHandler(
+		store.NewCodeStore(db),
+	)
+	th := handler.NewTokenHandler(
+		store.NewCodeStore(db),
+		// add TokenStore
+	)
 
 	http.HandleFunc("/authorize", ah.HandleAuthorizeRequest)
 	http.HandleFunc("/token", th.HandleTokenRequest)

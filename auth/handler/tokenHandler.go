@@ -11,14 +11,14 @@ import (
 	"go-oauth2-server/auth/util"
 )
 
-func NewTokenHandler(store *store.Store) *TokenHandler {
+func NewTokenHandler(cs *store.CodeStore) *TokenHandler {
 	return &TokenHandler{
-		Store: store,
+		CodeStore: cs,
 	}
 }
 
 type TokenHandler struct {
-	Store *store.Store
+	CodeStore *store.CodeStore
 }
 
 func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +61,7 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		log.Printf("Error: %v\n", err)
 		return false
 	}
-	if _, err := th.Store.GetData(clientId, r.URL.Query().Get("code")); err != nil {
+	if _, err := th.CodeStore.GetData(clientId, r.URL.Query().Get("code")); err != nil {
 		log.Printf("Error: %v\n", err)
 		return false
 	}
