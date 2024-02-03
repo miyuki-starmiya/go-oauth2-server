@@ -6,17 +6,18 @@ import (
 	"os"
 
 	"go-oauth2-server/auth/generate"
+	"go-oauth2-server/auth/model"
 	"go-oauth2-server/auth/store"
 )
 
-func NewAuthorizeHandler(store *store.Store) *AuthorizeHandler {
+func NewAuthorizeHandler(cs *store.CodeStore) *AuthorizeHandler {
 	return &AuthorizeHandler{
-		Store: store,
+		CodeStore: cs,
 	}
 }
 
 type AuthorizeHandler struct {
-	Store *store.Store
+	CodeStore *store.CodeStore
 }
 
 func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) {
@@ -25,10 +26,24 @@ func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *htt
 		return
 	}
 
+	clientId := r.URL.Query().Get("client_id")
+	redirect_uri := r.URL.Query().Get("redirect_uri")
 	state := r.URL.Query().Get("state")
+	code, _ := generate.NewAuthorizeGenerate().Token(r.Context(), os.Getenv("CLIENT_ID"))
+
+	// store the code object
+	authorizationData := &model.AuthorizationData{
+		ClientID:          clientId,
+		RedirectURI:       redirect_uri,
+		AuthorizationCode: code,
+	}
+	if err := ah.CodeStore.CreateData(authorizationData); err != nil {
+		log.Printf("Error: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	// redirect
-	code, _ := generate.NewAuthorizeGenerate().Token(r.Context(), os.Getenv("CLIENT_ID"))
 	redirectURL := os.Getenv("REDIRECT_URI") + "?code=" + code + "&state=" + state
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

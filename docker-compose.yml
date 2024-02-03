@@ -7,7 +7,9 @@ services:
     ports:
       - "9001:9001"
     env_file:
-      - ./auth/.env
+      - ./.env
+    networks:
+      - go-oauth2-server_network
 
   resource:
     build:
@@ -15,6 +17,29 @@ services:
     ports:
       - "9002:9002"
     env_file:
-      - ./resource/.env
+      - ./.env
     depends_on:
       - auth
+    networks:
+      - go-oauth2-server_network
+
+  db:
+    image: mongo:latest
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./.env
+    depends_on:
+      - auth
+      - resource
+    networks:
+      - go-oauth2-server_network
+
+volumes:
+  data:
+
+networks:
+  go-oauth2-server_network:
+    driver: "bridge"

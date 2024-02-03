@@ -13,7 +13,7 @@ func RetrieveAuthorizationHeader(r *http.Request) (string, error) {
 		return "", fmt.Errorf("authorization header is not basic")
 	}
 
-	return strings.Split(authorizationHeader, "Basic: ")[1], nil
+	return strings.Split(authorizationHeader, "Basic ")[1], nil
 }
 
 func EncodeClientBase64(clientId, clientSecret string) string {
