@@ -20,6 +20,19 @@ type CodeStore struct {
 	DB *mongo.Database
 }
 
+func (cs *CodeStore) CreateData(data *model.AuthorizationData) error {
+	collection := cs.DB.Collection("codes")
+
+	// Insert a single document
+	insertResult, err := collection.InsertOne(context.TODO(), data)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		return err
+	}
+	log.Printf("Inserted a single document: %v\n", insertResult.InsertedID)
+	return nil
+}
+
 func (cs *CodeStore) GetData(clientId string, authorizationCode string) (*model.AuthorizationData, error) {
 	collection := cs.DB.Collection("codes")
 
