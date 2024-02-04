@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
 	"github.com/miyuki-starmiya/go-oauth2-server/resource/domain/repository"
@@ -44,8 +45,14 @@ func (rh *ResourceHandler) validateAccessToken(r *http.Request) bool {
 		log.Printf("error: %v\n", err)
 		return false
 	}
-	if _, err := rh.TokenStore.GetData(r.URL.Query().Get("client_id"), token); err != nil {
+
+	tokenData, err := rh.TokenStore.GetData(r.URL.Query().Get("client_id"), token)
+	if err != nil {
 		log.Printf("Client ID and access token do not match: %v\n", err)
+		return false
+	}
+	if tokenData.IssuedAt.Add(time.Duration(tokenData.ExpiresIn) * time.Second).Before(time.Now()) {
+		log.Println("Access token has expired")
 		return false
 	}
 
