@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"go-oauth2-server/resource/domain/repository"
-	"go-oauth2-server/resource/store"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
+	"github.com/miyuki-starmiya/go-oauth2-server/resource/domain/repository"
 )
 
 func NewResourceHandler(ts *store.TokenStore) *ResourceHandler {

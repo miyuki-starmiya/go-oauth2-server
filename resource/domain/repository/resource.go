@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"go-oauth2-server/resource/domain/entity"
+	"github.com/miyuki-starmiya/go-oauth2-server/resource/domain/entity"
 )
 
 func GetResource() (*entity.Resource, error) {

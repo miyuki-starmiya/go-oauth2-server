@@ -2,11 +2,13 @@ FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY ./auth/go.mod ./auth/go.sum ./
+# Adjust local directory structure
+COPY ./db ../db
 
 RUN go mod download
 
-COPY . .
+COPY ./auth .
 
 RUN go build -o main .
 
