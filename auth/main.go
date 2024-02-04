@@ -7,8 +7,8 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"go-oauth2-server/auth/handler"
-	"go-oauth2-server/auth/store"
+	"github.com/miyuki-starmiya/go-oauth2-server/auth/handler"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
 )
 
 func main() {

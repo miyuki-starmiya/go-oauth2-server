@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"go-oauth2-server/auth/model"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/model"
 )
 
 func NewTokenStore(db *mongo.Database) *TokenStore {

@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"go-oauth2-server/auth/generate"
-	"go-oauth2-server/auth/model"
-	"go-oauth2-server/auth/store"
-	"go-oauth2-server/auth/util"
+	"github.com/miyuki-starmiya/go-oauth2-server/auth/generate"
+	"github.com/miyuki-starmiya/go-oauth2-server/auth/util"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/model"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
 )
 
 func NewTokenHandler(cs *store.CodeStore, ts *store.TokenStore) *TokenHandler {

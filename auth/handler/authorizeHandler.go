@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"go-oauth2-server/auth/generate"
-	"go-oauth2-server/auth/model"
-	"go-oauth2-server/auth/store"
+	"github.com/miyuki-starmiya/go-oauth2-server/auth/generate"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/model"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
 )
 
 func NewAuthorizeHandler(cs *store.CodeStore) *AuthorizeHandler {

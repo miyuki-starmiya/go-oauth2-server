@@ -3,7 +3,8 @@ version: '3.6'
 services:
   auth:
     build:
-      context: ./auth
+      context: .
+      dockerfile: ./auth/Dockerfile
     ports:
       - "9001:9001"
     env_file:
@@ -13,13 +14,12 @@ services:
 
   resource:
     build:
-      context: ./resource
+      context: .
+      dockerfile: ./resource/Dockerfile
     ports:
       - "9002:9002"
     env_file:
       - ./.env
-    depends_on:
-      - auth
     networks:
       - go-oauth2-server_network
 
