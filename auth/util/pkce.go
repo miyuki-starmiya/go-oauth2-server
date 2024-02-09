@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	server "github.com/miyuki-starmiya/go-oauth2-server"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/constants"
 )
 
 func GenerateCodeVerifier() string {
@@ -23,8 +23,8 @@ func GenerateCodeVerifier() string {
 	return string(b)
 }
 
-func GenerateCodeChallenge(codeVerifier string, codeChallengeMethod server.CodeChallengeMethod) string {
-	if codeChallengeMethod == server.CodeChallengePlain {
+func GenerateCodeChallenge(codeVerifier string, codeChallengeMethod constants.CodeChallengeMethod) string {
+	if codeChallengeMethod == constants.CodeChallengePlain {
 		return codeVerifier
 	}
 

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	server "github.com/miyuki-starmiya/go-oauth2-server"
 	"github.com/miyuki-starmiya/go-oauth2-server/auth/generate"
+	"github.com/miyuki-starmiya/go-oauth2-server/db/constants"
 	"github.com/miyuki-starmiya/go-oauth2-server/db/model"
 	"github.com/miyuki-starmiya/go-oauth2-server/db/store"
 )
@@ -72,14 +72,14 @@ func validateAuthorizeRequest(r *http.Request) bool {
 	}
 
 	// PKCE
-	if validatePKCERequest(r) == false {
+	if validatePKCEAuthorizeRequest(r) == false {
 		return false
 	}
 
 	return true
 }
 
-func validatePKCERequest(r *http.Request) bool {
+func validatePKCEAuthorizeRequest(r *http.Request) bool {
 	CodeChallenge := r.URL.Query().Get("code_challenge")
 	if CodeChallenge == "" {
 		log.Println("code_challenge is empty")
@@ -93,7 +93,7 @@ func validatePKCERequest(r *http.Request) bool {
 	if codeChallengeMethod == "" {
 		log.Println("code_challenge_method is empty")
 		return false
-	} else if codeChallengeMethod != server.CodeChallengePlain && codeChallengeMethod != server.CodeChallengeS256 {
+	} else if constants.CodeChallengeMethod(codeChallengeMethod) != constants.CodeChallengePlain && constants.CodeChallengeMethod(codeChallengeMethod) != constants.CodeChallengeS256 {
 		log.Println("code_challenge_method is wrong")
 		return false
 	}
