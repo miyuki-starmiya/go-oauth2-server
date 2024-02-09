@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"math/rand"
 	"time"
+
+	server "github.com/miyuki-starmiya/go-oauth2-server"
 )
 
 func GenerateCodeVerifier() string {
@@ -21,7 +23,11 @@ func GenerateCodeVerifier() string {
 	return string(b)
 }
 
-func GenerateCodeChallenge(codeVerifier string) string {
+func GenerateCodeChallenge(codeVerifier string, codeChallengeMethod server.CodeChallengeMethod) string {
+	if codeChallengeMethod == server.CodeChallengePlain {
+		return codeVerifier
+	}
+
 	// Hash the code verifier using SHA-256
 	h := sha256.New()
 	h.Write([]byte(codeVerifier))
