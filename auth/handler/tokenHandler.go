@@ -25,6 +25,13 @@ type TokenHandler struct {
 	TokenStore *store.TokenStore
 }
 
+type TokenRequest struct {
+	GrantType    string  `json:"grant_type"`
+	RedirectURI  string  `json:"redirect_uri"`
+	Code         string  `json:"code"`
+	CodeVerifier *string `json:"code_verifier"`
+}
+
 func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Request) {
 	if !th.validateTokenRequest(r) {
 		w.WriteHeader(http.StatusBadRequest)
@@ -63,15 +70,23 @@ func (th *TokenHandler) HandleTokenRequest(w http.ResponseWriter, r *http.Reques
 
 func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 	// Check Request Parameters
+	// extract request body
+	var tr TokenRequest
+	if err := json.NewDecoder(r.Body).Decode(&tr); err != nil {
+		log.Printf("Error: %v\n", err)
+		return false
+	}
+	defer r.Body.Close()
+
 	if r.Method != "POST" {
 		log.Println("request method must be POST")
 		return false
 	}
-	if r.URL.Query().Get("grant_type") != "authorization_code" {
+	if tr.GrantType != "authorization_code" {
 		log.Println("grant_type must be authorization_code")
 		return false
 	}
-	if r.URL.Query().Get("redirect_uri") != os.Getenv("REDIRECT_URI") {
+	if tr.RedirectURI != os.Getenv("REDIRECT_URI") {
 		log.Println("redirect_uri is wrong")
 		return false
 	}
@@ -86,7 +101,7 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		log.Println("client secret is wrong")
 		return false
 	}
-	authorizationData, err := th.CodeStore.GetData(clientId, r.URL.Query().Get("code"))
+	authorizationData, err := th.CodeStore.GetData(clientId, tr.Code)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		return false
