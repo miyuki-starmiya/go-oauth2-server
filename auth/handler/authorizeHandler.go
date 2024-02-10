@@ -31,13 +31,12 @@ func (ah *AuthorizeHandler) HandleAuthorizeRequest(w http.ResponseWriter, r *htt
 	redirect_uri := r.URL.Query().Get("redirect_uri")
 	state := r.URL.Query().Get("state")
 	code, _ := generate.NewAuthorizeGenerate().Token(r.Context(), os.Getenv("CLIENT_ID"))
+	code_challenge := r.URL.Query().Get("code_challenge")
+	code_challenge_method := r.URL.Query().Get("code_challenge_method")
 
 	// store the code object
-	authorizationData := &model.AuthorizationData{
-		ClientID:          clientId,
-		RedirectURI:       redirect_uri,
-		AuthorizationCode: code,
-	}
+	authorizationData := model.NewAuthorizationData(clientId, redirect_uri, code, model.WithCodeChallenge(code_challenge), model.WithCodeChallengeMethod(constants.CodeChallengeMethod(code_challenge_method)))
+
 	if err := ah.CodeStore.CreateData(authorizationData); err != nil {
 		log.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
