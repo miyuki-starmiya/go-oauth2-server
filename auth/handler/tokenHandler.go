@@ -82,12 +82,34 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		log.Printf("Error: %v\n", err)
 		return false
 	}
-	if _, err := th.CodeStore.GetData(clientId, r.URL.Query().Get("code")); err != nil {
+	if clientSecret != os.Getenv("CLIENT_SECRET") {
+		log.Println("client secret is wrong")
+		return false
+	}
+	authorizationData, err := th.CodeStore.GetData(clientId, r.URL.Query().Get("code"))
+	if err != nil {
 		log.Printf("Error: %v\n", err)
 		return false
 	}
-	if clientSecret != os.Getenv("CLIENT_SECRET") {
-		log.Println("client secret is wrong")
+	if validatePKCETokenRequest(r, authorizationData) == false {
+		return false
+	}
+
+	return true
+}
+
+func validatePKCETokenRequest(r *http.Request, ad *model.AuthorizationData) bool {
+	log.Println("got authorizationData:", ad)
+	if ad.CodeChallenge == nil && ad.CodeChallengeMethod == nil {
+		return true
+	}
+
+	codeVerifier := r.URL.Query().Get("code_verifier")
+	if codeVerifier == "" {
+		log.Println("code_verifier is empty")
+		return false
+	} else if codeVerifier != "" && util.GenerateCodeChallenge(codeVerifier, *ad.CodeChallengeMethod) != *ad.CodeChallenge {
+		log.Println("code_verifier is wrong")
 		return false
 	}
 
