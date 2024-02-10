@@ -77,6 +77,7 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		return false
 	}
 	defer r.Body.Close()
+	log.Println("got token request:", tr)
 
 	if r.Method != "POST" {
 		log.Println("request method must be POST")
@@ -106,24 +107,23 @@ func (th *TokenHandler) validateTokenRequest(r *http.Request) bool {
 		log.Printf("Error: %v\n", err)
 		return false
 	}
-	if validatePKCETokenRequest(r, authorizationData) == false {
+	if validatePKCETokenRequest(&tr, authorizationData) == false {
 		return false
 	}
 
 	return true
 }
 
-func validatePKCETokenRequest(r *http.Request, ad *model.AuthorizationData) bool {
+func validatePKCETokenRequest(tr *TokenRequest, ad *model.AuthorizationData) bool {
 	log.Println("got authorizationData:", ad)
 	if ad.CodeChallenge == nil && ad.CodeChallengeMethod == nil {
 		return true
 	}
 
-	codeVerifier := r.URL.Query().Get("code_verifier")
-	if codeVerifier == "" {
+	if *tr.CodeVerifier == "" {
 		log.Println("code_verifier is empty")
 		return false
-	} else if codeVerifier != "" && util.GenerateCodeChallenge(codeVerifier, *ad.CodeChallengeMethod) != *ad.CodeChallenge {
+	} else if *tr.CodeVerifier != "" && util.GenerateCodeChallenge(*tr.CodeVerifier, *ad.CodeChallengeMethod) != *ad.CodeChallenge {
 		log.Println("code_verifier is wrong")
 		return false
 	}
